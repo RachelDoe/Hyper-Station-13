@@ -10,11 +10,6 @@
 	var/fluid_transfer_factor	= 0.0 //How much would a partner get in them if they climax using this?
 	var/size					= 2 //can vary between num or text, just used in icon_state strings
 	var/datum/reagent/fluid_id  = null
-	var/fluid_max_volume		= 15
-	var/fluid_efficiency		= 1
-	var/fluid_rate				= 1
-	var/fluid_mult				= 1
-	var/producing				= FALSE
 	var/aroused_state			= FALSE //Boolean used in icon_state strings
 	var/aroused_amount			= 50 //This is a num from 0 to 100 for arousal percentage for when to use arousal state icons.
 	var/obj/item/organ/genital/linked_organ
@@ -26,6 +21,7 @@
 	var/obj/item/equipment 		//for fun stuff that goes on the gentials/maybe rings down the line
 	var/dontlist				= FALSE
 	var/nochange				= FALSE //stops people changing visablity.
+	var/cached_size				= 1 //Default, this value is usually overridden
 
 /obj/item/organ/genital/Initialize()
 	. = ..()
@@ -46,6 +42,19 @@
 	update_size()
 	update_appearance()
 	update_link()
+	update_fluids()
+
+
+/obj/item/organ/genital/proc/genital_life()
+	if(QDELETED(src))
+		return
+
+	if(	!producing || !reagents || !owner || (owner.stat == DEAD) || !gen_reagents )
+		return
+
+	update_fluids()
+	process_genital_reagents()
+
 
 //exposure and through-clothing code
 /mob/living/carbon
@@ -215,10 +224,17 @@
 				T.internal = TRUE
 			else
 				T.internal = FALSE
-			T.fluid_id = dna.features["balls_fluid"]
-			T.fluid_rate = dna.features["balls_cum_rate"]
-			T.fluid_mult = dna.features["balls_cum_mult"]
-			T.fluid_efficiency = dna.features["balls_efficiency"]
+			//genital_fluid_generation set methods
+			T.set_volume_base(		dna.features["balls_volume_base"]	)
+			T.set_efficiency(		dna.features["balls_efficiency"]	)
+			T.set_rate(				dna.features["balls_cum_rate"]		)
+			T.set_mult(				dna.features["balls_cum_mult"]		)
+			T.set_max_vol_ratio(	dna.features["balls_max_vol_ratio"]	)
+
+			T.set_producing(		dna.features["balls_producing"]		)
+			T.set_gen_reagents(		dna.features["balls_fluid"]			)
+
+			T.cached_size = 6 
 			T.update()
 
 /mob/living/carbon/human/proc/give_belly()
@@ -289,8 +305,16 @@
 				B.cached_size = B.size
 				B.prev_size = B.size
 			B.shape = dna.features["breasts_shape"]
-			B.fluid_id = dna.features["breasts_fluid"]
-			B.producing = dna.features["breasts_producing"]
+			//genital_fluid_generation set methods
+			B.set_volume_base(		dna.features["breasts_volume_base"]	)
+			B.set_efficiency(		dna.features["breasts_efficiency"]	)
+			B.set_rate(				dna.features["breasts_cum_rate"]	)
+			B.set_mult(				dna.features["breasts_cum_mult"]	)
+			B.set_max_vol_ratio(	dna.features["breasts_max_vol_ratio"])
+
+			B.set_producing( 		dna.features["breasts_producing"]	)
+			B.set_gen_reagents(		dna.features["breasts_fluid"]		)
+			
 			B.update()
 
 
@@ -324,6 +348,19 @@
 		var/obj/item/organ/genital/womb/W = new
 		W.Insert(src)
 		if(W)
+			W.set_volume_base(		dna.features["womb_volume_base"]	)
+			W.set_efficiency(		dna.features["womb_efficiency"]		)
+
+			if(HAS_TRAIT(src, TRAIT_HEAT))
+				W.set_rate(			dna.features["womb_cum_rate"]*2		) //:3c
+			else
+				W.set_rate(			dna.features["womb_cum_rate"]		)
+			
+			W.set_mult(				dna.features["womb_cum_mult"]		)
+			W.set_max_vol_ratio(	dna.features["womb_max_vol_ratio"]	)
+
+			W.set_producing(		dna.features["womb_producing"]		)
+			W.set_gen_reagents(		dna.features["womb_fluid"]			)										
 			W.update()
 
 /mob/living/carbon/human/proc/make_breedable()

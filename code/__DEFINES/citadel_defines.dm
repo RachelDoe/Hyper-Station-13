@@ -29,8 +29,9 @@
 #define KNOT_GIRTH_RATIO_DEF		2.1
 #define KNOT_GIRTH_RATIO_MIN		1.25
 
-#define BALLS_VOLUME_BASE	25
-#define BALLS_VOLUME_MULT	1
+#define BALLS_VOLUME_BASE	5
+#define BREASTS_VOLUME_BASE	10
+#define WOMB_VOLUME_BASE	15
 
 #define BALLS_SIZE_MIN		1 //Hyper - Unchanged
 #define BALLS_SIZE_DEF		8 //Changed from 2
@@ -44,11 +45,27 @@
 #define CUM_RATE_MULT		1
 #define CUM_EFFICIENCY		1 //amount of nutrition required per life()
 
+#define WOMB_CUM_RATE			1
+#define BALLS_CUM_RATE			0.1
+#define BREASTS_CUM_RATE		0.25
+
+#define WOMB_CUM_RATE_MULT		1
+#define BALLS_CUM_RATE_MULT		1
+#define BREASTS_CUM_RATE_MULT	1
+
+#define WOMB_CUM_EFFICIENCY		1
+#define BALLS_CUM_EFFICIENCY	1
+#define BREASTS_CUM_EFFICIENCY	1
+
+#define WOMB_MAX_VOL_RATIO		20
+#define BALLS_MAX_VOL_RATIO		10
+#define BREASTS_MAX_VOL_RATIO	10
+
 #define EGG_GIRTH_MIN		1 //inches
 #define EGG_GIRTH_DEF		6
 #define EGG_GIRTH_MAX		16
 
-#define BREASTS_VOLUME_BASE	50	//base volume for the reagents in the breasts, multiplied by the size then multiplier. 50u for A cups, 850u for HH cups.
+//#define BREASTS_VOLUME_BASE	50	//base volume for the reagents in the breasts, multiplied by the size then multiplier. 50u for A cups, 850u for HH cups.
 #define BREASTS_VOLUME_MULT	1	//global multiplier for breast volume.
 #define BREASTS_SIZE_FLAT	0
 #define BREASTS_SIZE_A		1

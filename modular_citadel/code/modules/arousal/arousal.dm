@@ -464,11 +464,13 @@
 					if (HAS_TRAIT(L, TRAIT_HEAT))
 						SEND_SIGNAL(L, COMSIG_ADD_MOOD_EVENT, "heat", /datum/mood_event/heat) //well done you perv.
 						REMOVE_TRAIT(L, TRAIT_HEAT, ROUNDSTART_TRAIT) //take the heat away, you satisfied it!
+						var/mob/living/carbon/human/H = L
+						W.set_rate(H.dna.features["womb_cum_rate"]/2) //Experimental less horny balance?
 
 			 		//Make breasts produce quicker.
 					var/obj/item/organ/genital/breasts/B = L.getorganslot("breasts")
-					if (B.fluid_mult < 0.5 && B)
-						B.fluid_mult = 0.5
+					if (B.get_rate() < 0.5 && B)
+						B.set_rate(0.5)
 
 
 /mob/living/carbon/human/proc/mob_fill_container(obj/item/organ/genital/G, obj/item/reagent_containers/container, mb_time = 30) //For beaker-filling, beware the bartender
@@ -833,3 +835,8 @@
 			else //Somehow another option was taken, maybe something interrupted the selection or it was cancelled
 				return //Just end it in that case.
 
+/*
+	
+*/
+mob/living/carbon/human/proc/chem_transfer(var/obj/item/organ/genital, var/list/reagentsList) //to who, where and what it is
+	

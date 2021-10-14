@@ -7,16 +7,13 @@
 	slot 					= "breasts"
 	w_class 				= 3
 	size 					= BREASTS_SIZE_DEF  //SHOULD BE A LETTER, starts as a number...???
-	var/cached_size			= null //for enlargement SHOULD BE A NUMBER
+	//var/cached_size			= null //for enlargement SHOULD BE A NUMBER
 	var/prev_size			//For flavour texts SHOULD BE A LETTER
 	//var/breast_sizes 		= list ("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "huge", "massive", "giga", "impossible", "flat")
 	var/breast_values 		= list ("a" =  1, "b" = 2, "c" = 3, "d" = 4, "e" = 5, "f" = 6, "g" = 7, "h" = 8, "i" = 9, "j" = 10, "k" = 11, "l" = 12, "m" = 13, "n" = 14, "o" = 15, "huge" = 16, "massive" = 17, "giga" = 25, "impossible" = 30, "flat" = 0) // Note: Do not forget to define new sizes.
 	var/statuscheck			= FALSE
-	fluid_id				= /datum/reagent/consumable/milk
+	//fluid_id				= /datum/reagent/consumable/milk
 	var/amount				= 2
-	fluid_mult				= 0.25 // Set to a lower value due to production scaling with size (I.E. D cups produce the "normal" amount)
-	fluid_max_volume		= 10
-	producing				= TRUE
 	shape					= "Pair"
 	can_masturbate_with		= TRUE
 	masturbation_verb 		= "massage"
@@ -25,34 +22,7 @@
 	var/sent_full_message	= TRUE //defaults to 1 since they're full to start
 
 /obj/item/organ/genital/breasts/on_life()
-	if(QDELETED(src))
-		return
-	if(!reagents || !owner)
-		return
-	reagents.maximum_volume = fluid_max_volume * cached_size// fluid amount is also scaled by the size of the organ
-	if(fluid_id && producing)
-		if(reagents.total_volume == 0) // Apparently, 0.015 gets rounded down to zero and no reagents are created if we don't start it with 0.1 in the tank.
-			reagents.total_volume = 0.1
-		else
-			fluid_rate = CUM_RATE * cached_size * fluid_mult // fluid rate is scaled by the size of the organ
-		generate_milk()
-
-/obj/item/organ/genital/breasts/proc/generate_milk()
-	if(owner.stat == DEAD)
-		return FALSE
-	if(reagents.total_volume >= reagents.maximum_volume)
-		if(!sent_full_message)
-			send_full_message()
-			sent_full_message = TRUE
-		/*
-		if(HAS_TRAIT(owner, TRAIT_FLUID_LEAK))
-			reagents.get_master_reagent().reaction_turf(get_turf(owner), 3)
-			reagents.remove_reagent(fluid_id, 3)
-			*/
-		return FALSE
-	sent_full_message = FALSE
-	reagents.isolate_reagent(fluid_id)
-	reagents.add_reagent(fluid_id, (fluid_rate))
+	genital_life()
 
 /obj/item/organ/genital/breasts/proc/send_full_message(msg = "Your breasts finally feel full, again.")
 	if(owner && istext(msg))
