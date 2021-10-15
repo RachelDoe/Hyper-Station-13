@@ -220,6 +220,3 @@ tools/MapAtmosFixer/MapAtmosFixer/bin/*
 /config/title_screens/images/*
 !/config/title_screens/images/exclude
 config/admins.txt
-_maps/map_files/debug/runtimestation.dmm
-_maps/map_files/debug/runtimestation.dmm
-config/custom_roundstart_items.txt

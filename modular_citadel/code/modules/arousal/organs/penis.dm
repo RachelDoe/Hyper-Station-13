@@ -8,7 +8,7 @@
 	can_masturbate_with 	= TRUE
 	masturbation_verb 		= "stroke"
 	can_climax 				= TRUE
-	fluid_transfer_factor	= 0.8
+	fluid_transfer_factor	= 0.5
 	size 					= 2 //arbitrary value derived from length and girth for sprites.
 	var/condom				= 0 //No condom, its better this way...
 	var/sounding			= 0
