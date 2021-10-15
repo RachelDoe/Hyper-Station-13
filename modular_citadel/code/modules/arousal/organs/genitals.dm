@@ -12,7 +12,7 @@
 	var/datum/reagent/fluid_id  = null
 	var/aroused_state			= FALSE //Boolean used in icon_state strings
 	var/aroused_amount			= 50 //This is a num from 0 to 100 for arousal percentage for when to use arousal state icons.
-	var/obj/item/organ/genital/linked_organ
+	var/obj/item/organ/genital/linked_organ = null
 	var/through_clothes			= FALSE
 	var/internal				= FALSE
 	var/hidden					= FALSE
@@ -585,3 +585,7 @@
 
 	for(var/L in relevant_layers)
 		H.apply_overlay(L)
+
+//------Some Get Set Methods------
+/obj/item/organ/genital/proc/get_linked_organ()
+	return linked_organ 

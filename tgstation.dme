@@ -3261,6 +3261,7 @@
 #include "modular_citadel\code\modules\arousal\organs\breasts.dm"
 #include "modular_citadel\code\modules\arousal\organs\eggsack.dm"
 #include "modular_citadel\code\modules\arousal\organs\genital_fluid_generation.dm"
+#include "modular_citadel\code\modules\arousal\organs\genital_fluid_transfer.dm"
 #include "modular_citadel\code\modules\arousal\organs\genitals.dm"
 #include "modular_citadel\code\modules\arousal\organs\genitals_sprite_accessories.dm"
 #include "modular_citadel\code\modules\arousal\organs\ovipositor.dm"
