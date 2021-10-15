@@ -426,6 +426,7 @@
 				if (P.condom)//condomed.
 					src.condomclimax()
 				else
+					P.climax_transfer(L.getorganslot("vagina"))
 					fluid_source.trans_to(L, total_fluids)
 				total_fluids = 0
 				if(!remote)

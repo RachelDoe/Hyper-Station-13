@@ -7,18 +7,20 @@
 	var/fluid_max_volume				= 0				//Maximum volume of fluids a genital can hold
 	var/fluid_max_gen_vol				= 0				//Maximum volume till which a genital will produce fluid
 	var/fluid_volume_base				= 0				//Base capacity for fluid in genital
+	
 
 	var/fluid_efficiency				= 0				//
 	var/fluid_rate						= 0				//Base rate at which a genital produces fluid
 	var/fluid_mult						= 0				//Modifyer of base rate at which a genital produces fluid
 	var/fluid_max_vol_ratio				= 10			//max vol = max gen vol * max vol ratio
 
-	var/fluid_absorb_rate				= 0				//
+	var/fluid_flat_loss_rate			= 0.045
+	var/fluid_absorb_rate				= 0.002			//
 	var/producing						= FALSE			//
 	var/list/datum/reagent/gen_reagents	= new/list()	//list of TYPES of reagents to generate
 	var/fluid_cum_rate					= 0				//net fluid production per tick
 
-
+""
 //----------------------------Getter and setter methods-----------------------------
 //set and get gen reagents
 /obj/item/organ/genital/proc/set_gen_reagents(var/setReagents, append = FALSE)		//Set reagents via a list of reagents or just a single reagent type
@@ -103,6 +105,14 @@
 /obj/item/organ/genital/proc/get_volume_base()
 	return fluid_volume_base
 //
+/obj/item/organ/genital/proc/get_reagents()
+	return reagents
+//
+/obj/item/organ/genital/proc/set_flat_fluid_loss_rate(var/newLossRate)
+	 fluid_flat_loss_rate = newLossRate
+
+
+//
 /obj/item/organ/genital/proc/update_fluids()
 	fluid_max_volume 		= fluid_volume_base * cached_size * fluid_max_vol_ratio
 	fluid_max_gen_vol 		= fluid_volume_base * cached_size
@@ -116,8 +126,8 @@
 
 	//Remove reagents not native to organ
 	for(var/datum/reagent/R in reagents.reagent_list) 		//for each reagent in reagents
-		if( !(R in gen_reagents) )							//remove this reagent if not in the gen list
-			reagents.remove_reagent(R, R.volume*(1 - fluid_absorb_rate) )
+		if( !(R.type in gen_reagents) )							//remove this reagent if not in the gen list
+			reagents.remove_reagent(R.type, (R.volume * fluid_absorb_rate - fluid_flat_loss_rate) )	//Yes, I understand the graph is like, 98% linear
 
 	//Add reagents native to organ
 	var/uniqueGens = gen_reagents.len				//How many unique reagents are generated
@@ -126,7 +136,6 @@
 	var/genVolRem = fluid_max_gen_vol					//How much generation volume remains
 	for(var/R in gen_reagents)				
 		genVolRem -= reagents.get_reagent_amount(R)
-	world.log << genVolRem
 
 	//Adding reagents to organ
 	if(genVolRem < CHEMICAL_QUANTISATION_LEVEL)								//If it's a ridiculously small remaining vol just return
