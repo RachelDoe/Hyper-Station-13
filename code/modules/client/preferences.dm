@@ -140,7 +140,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		"cock_length" = 6,
 		"belly_size" = 1,
 		"butt_size" = 1,
-		"cock_girth_ratio" = COCK_GIRTH_RATIO_DEF,
+		"cock_girth_ratio" = 0.25,
 		"cock_color" = "fff",
 		"has_sheath" = FALSE,
 		"sheath_color" = "fff",
@@ -445,7 +445,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Custom Species Name:</b><a style='display:block;width:100px' href='?_src_=prefs;preference=custom_species;task=input'>[custom_species ? custom_species : "None"]</a><BR>"
 			dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=all;task=random'>Random Body</A><BR>"
 			dat += "<b>Always Random Body:</b><a href='?_src_=prefs;preference=all'>[be_random_body ? "Yes" : "No"]</A><BR>"
-			//dat += "<br><b>Cycle background:</b><a style='display:block;width:100px' href='?_src_=prefs;preference=cycle_bg;task=input'>[bgstate]</a><BR>"
+			dat += "<br><b>Cycle background:</b><a style='display:block;width:100px' href='?_src_=prefs;preference=cycle_bg;task=input'>[bgstate]</a><BR>"
 
 			var/use_skintones = pref_species.use_skintones
 			if(use_skintones)
@@ -856,6 +856,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						dat += "<span style='border: 1px solid #161616; background-color: #[features["cock_color"]];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=cock_color;task=input'>Change</a><br>"
 					dat += "<b>Penis Shape:</b> <a style='display:block;width:120px' href='?_src_=prefs;preference=cock_shape;task=input'>[features["cock_shape"]]</a>"
 					dat += "<b>Penis Length:</b> <a style='display:block;width:120px' href='?_src_=prefs;preference=cock_length;task=input'>[features["cock_length"]] inch(es)</a>"
+					dat += "<b>Girth Ratio:</b> <a style='display:block;width:50px' href='?_src_=prefs;preference=cock_girth_ratio;task=input'>[features["cock_girth_ratio"]]</a>"
 					dat += "<b>Has Testicles:</b><a style='display:block;width:50px' href='?_src_=prefs;preference=has_balls'>[features["has_balls"] == TRUE ? "Yes" : "No"]</a>"
 					if(features["has_balls"])
 						if(pref_species.use_skintones && features["genitals_use_skintone"] == TRUE)
@@ -1167,7 +1168,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "</table>"
 
 		if(4)		//Antag Preferences
-			dat += "<table><tr><td width='340px' height='300px' valign='top'>"
 			dat += "<h1>Special Role Settings</h1>"
 			if(jobban_isbanned(user, ROLE_SYNDICATE))
 				dat += "<font color=red><h3><b>You are banned from antagonist roles.</b></h3></font>"
@@ -1188,13 +1188,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					else
 						dat += "<b>Be [capitalize(i)]:</b> <a href='?_src_=prefs;preference=be_special;be_special_type=[i]'>[(i in be_special) ? "Enabled" : "Disabled"]</a><br>"
 			dat += "<b>Midround Antagonist:</b> <a href='?_src_=prefs;preference=allow_midround_antag'>[(toggles & MIDROUND_ANTAG) ? "Enabled" : "Disabled"]</a><br>"
-			dat += "</td><td width='340px' height='300px' valign='top'>"
-			dat += "<h1>Sync Settings</h1>"
-			dat += "<b>Sync</b> antag prefs. with all characters: <a href='?_src_=prefs;preference=sync_antag_with_chars'>[(toggles & ANTAG_SYNC_WITH_CHARS) ? "Yes" : "No"]</a><br>"
-			dat += "<b>Copy</b> and save antag prefs. to all characters: <a href='?_src_=prefs;preference=copy_antag_to_chars'>Copy</a><br>"
-			dat += "<b>Reset</b> antag prefs. for this character: <a href='?_src_=prefs;preference=reset_antag'>Reset</a><br>"
-			dat += "</td></tr></table>"
-
 
 	dat += "<hr><center>"
 
@@ -1265,6 +1258,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			lastJob = job
 			if(jobban_isbanned(user, rank))
 				HTML += "<font color=red>[rank]</font></td><td><a href='?_src_=prefs;jobbancheck=[rank]'> BANNED</a></td></tr>"
+				continue
+			if((rank in GLOB.silly_positions) && (!sillyroles))
+				HTML += "<font color=red>[rank]</font></td><td><a href='?_src_=prefs;jobbancheck=[rank]'> WHITELIST</a></td></tr>"
 				continue
 			var/required_playtime_remaining = job.required_playtime_remaining(user.client)
 			if(required_playtime_remaining)
@@ -2264,6 +2260,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(new_length)
 						features["cock_length"] = max(min( round(text2num(new_length)), COCK_SIZE_MAX),COCK_SIZE_MIN)
 
+				if("cock_girth_ratio")
+					var/new_girth = input(user, "Penis to girth ratio:\n([COCK_GIRTH_RATIO_MIN]-[COCK_GIRTH_RATIO_MAX]) This will affect your girth examine text in relation to length!\n(Whole numbers become fractions 25->.25, 30->.3)", "Character Preference") as num|null
+					if(new_girth)
+						features["cock_girth_ratio"] = (max(min( round(text2num(new_girth)), 42),15))/100
+
 				if("balls_size")
 					var/new_balls_size = input(user, "Testicle circumference in inches:\n([BALLS_SIZE_MIN]-[BALLS_SIZE_MAX])", "Character Preference") as num|null
 					if(new_balls_size)
@@ -2673,30 +2674,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("allow_midround_antag")
 					toggles ^= MIDROUND_ANTAG
-
-				if("sync_antag_with_chars")
-					toggles ^= ANTAG_SYNC_WITH_CHARS
-					if(!(toggles & ANTAG_SYNC_WITH_CHARS) && path)
-						var/savefile/S = new /savefile(path)
-						if(S)
-							S["special_roles"] >> be_special
-
-				if("copy_antag_to_chars")
-					if(path)
-						var/savefile/S = new /savefile(path)
-						if(S)
-							var/initial_cd = S.cd
-							for(var/i=1, i<=max_save_slots, i++)
-								S.cd = "/character[i]"
-								if(S["real_name"])
-									WRITE_FILE(S["special_roles"], be_special)
-							S.cd = initial_cd
-							to_chat(parent, "<span class='notice'>Successfully copied antagonist preferences to all characters.</span>")
-						else
-							to_chat(parent, "<span class='notice'>Could not write to file.</span>")
-
-				if("reset_antag")
-					be_special = list()
 
 				if("parallaxup")
 					parallax = WRAP(parallax + 1, PARALLAX_INSANE, PARALLAX_DISABLE + 1)
